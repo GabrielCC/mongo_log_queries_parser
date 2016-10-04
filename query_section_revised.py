@@ -95,13 +95,10 @@ class QuerySectionRevised(BaseSection):
             stats['sort_pattern'] = sort_pattern
             stats['count'] = len(group_events)
             stats['mean'] = 0
-            if np:
-                stats['95%'] = np.percentile(group_events, 95) if group_events else '-'
-            else:
-                stats['95%'] = 'n/a'
+
             stats['sum'] = sum(group_events) if group_events else '-'
-            stats['sum'] = stats['sum'] / 60.0 / 1000
             stats['mean'] = stats['sum'] / stats['count'] if group_events else '-'
+            stats['sum'] = round(stats['sum'] / 1000.0 / 60, 2) if group_events else '-'
 
             if self.mloginfo.args['verbose']:
                 stats['example'] = grouping[g][0]

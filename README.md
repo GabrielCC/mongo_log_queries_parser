@@ -2,9 +2,9 @@ Customized mongodb's mtools (query tool)
 
 # Install
 
-Needs python 2.7.
+Needs python 2.7
 
-## Virtualenv
+## Virtualenv (optional, else `sudo pip install`)
 
     virtualenv venv
     source venv/bin/activate
@@ -22,7 +22,7 @@ Needs python 2.7.
 
 # Run
 
-    ./mloginfo2.py mongod.log --queries2
+    ./mloginfo2.py /var/log/mongod.log --queries2
 
 # Tips
 
@@ -32,4 +32,4 @@ a. Find the first "DateTime" line number in the mongodb log
 
 b. Copy the contents after that line in another file:
 
-    tail -n +LineNumber /path/to/file > /var/log/mongodb_latest.log
+    tail -n +LineNumber /var/log/mongod.log > /var/log/mongod_latest.log
