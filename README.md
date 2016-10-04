@@ -18,8 +18,18 @@ Needs python 2.7.
 - grouping by collection (useful for multitenant implemented by separate dbs)
 - limit to top 30 elements
 - sorting by total time
-- hints regarding
+- [TODO] connects to db, displays hints on existing indexes
 
 # Run
 
     ./mloginfo2.py mongod.log --queries2
+
+# Tips
+
+To execute only on log after "DateTime":
+
+a. Find the first "DateTime" line number in the mongodb log
+
+b. Copy the contents after that line in another file:
+
+    tail -n +LineNumber /path/to/file > /var/log/mongodb_latest.log
