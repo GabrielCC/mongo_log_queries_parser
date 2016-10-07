@@ -70,7 +70,12 @@ class QuerySectionRevised(BaseSection):
 
             if le.operation in ['query', 'getmore', 'update', 'remove'] or le.command in ['count', 'findandmodify',
                                                                                           'geonear']:
-                db, collection = le.namespace.split(".")
+                namespace_part = le.namespace.split(".")
+                if len(namespace_part) == 2:
+                    db, collection = namespace_part
+                else:
+                    db, collection, subcollection = namespace_part
+                    collection = collection + subcollection
                 lt = LogTuple(
                     db=db, collection=collection, nscanned=le.nscanned,
                     ntoreturn=le.ntoreturn, writeConflicts=le.writeConflicts, operation=op_or_cmd(le),
