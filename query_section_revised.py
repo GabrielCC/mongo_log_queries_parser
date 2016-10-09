@@ -29,9 +29,14 @@ class QuerySectionRevised(BaseSection):
     def __init__(self, mloginfo):
         BaseSection.__init__(self, mloginfo)
 
+        self.mloginfo.argparser_sectiongroup.add_argument('--min-nscanned', type=int,
+                                                          help='ignore gueries with an nscanned less than N')
+        self.mloginfo.argparser_sectiongroup.add_argument('--min-duration', type=int,
+                                                          help='ignore gueries with a duration less than N')
         # add --queries flag to argparser
         self.mloginfo.argparser_sectiongroup.add_argument('--queries2', action='store_true',
                                                           help='outputs statistics about query patterns')
+
 
     @property
     def active(self):
@@ -42,6 +47,8 @@ class QuerySectionRevised(BaseSection):
         """ run this section and print out information. """
         grouping = Grouping(group_by=lambda x: (x.collection, x.operation, x.pattern, x.sort_pattern))
         logfile = self.mloginfo.logfile
+        min_duration = self.mloginfo.args['min_duration']
+        min_nscanned = self.mloginfo.args['min_nscanned']
 
         if logfile.start and logfile.end:
             progress_start = self.mloginfo._datetime_to_epoch(logfile.start)
@@ -56,12 +63,17 @@ class QuerySectionRevised(BaseSection):
                     progress_curr = self.mloginfo._datetime_to_epoch(le.datetime)
                     self.mloginfo.update_progress(float(progress_curr - progress_start) / progress_total)
 
+            if min_duration and le.duration < min_duration:
+                continue
+            if min_nscanned and le.nscanned < min_nscanned:
+                continue
+
             if le.operation in ['query', 'getmore', 'update', 'remove'] or le.command in ['count', 'findandmodify',
                                                                                           'geonear']:
                 db, collection = le.namespace.split(".")
                 lt = LogTuple(
-                    db=db, collection=collection, nscanned=le.nscanned, ntoreturn=le.ntoreturn,
-                    writeConflicts=le.writeConflicts, operation=op_or_cmd(le),
+                    db=db, collection=collection, nscanned=le.nscanned,
+                    ntoreturn=le.ntoreturn, writeConflicts=le.writeConflicts, operation=op_or_cmd(le),
                     pattern=le.pattern, duration=le.duration, sort_pattern=le.sort_pattern)
                 grouping.add(lt)
 
